@@ -1,13 +1,14 @@
 date=$(date '+%Y-%m-%d_%H-%M-%S')
 
-BKP_DIR=bkp_devilbox_$date
+BKP_FILE=bkp_devilbox_$date
 
-cp -r devilbox/data $BKP_DIR 
+mkdir -p devilbox/data
+tar -czpf $BKP_FILE.tar.gz devilbox/data
 
 rm -rf devilbox
 git clone https://github.com/cytopia/devilbox
 
-mv -r $BKP_DIR devilbox/data 
+tar -xzpf $BKP_FILE.tar.gz devilbox/data
 
 cd devilbox
 cp env-example .env
@@ -25,8 +26,8 @@ sed -i "s/^\(HOST_PORT_PGSQL\s*=\s*\).*$/\1$HOST_PORT_PGSQL/" .env
 
 PASS="secret"
 sed -i "s/^\(DEVILBOX_UI_PASSWORD\s*=\s*\).*\$/\1$PASS/" .env
-sed -i "s/^\(DEVILBOX_HTTP_MGMT_PASSWORD\s*=\s*\).*\$/\1$PASS/" .env
-sed -i "s/^\(MYSQL_ROOT_PASSWORD\s*=\s*\).*\$/\1$PASS/" .env
+sed -i "s/^\(DEVILBOX_HTTPD_MGMT_PASS\s*=\s*\).*\$/\1$PASS/" .env
+# sed -i "s/^\(MYSQL_ROOT_PASSWORD\s*=\s*\).*\$/\1$PASS/" .env
 sed -i "s/^\(PGSQL_ROOT_PASSWORD\s*=\s*\).*\$/\1$PASS/" .env
 
-docker-compose up
+docker-compose up -d
